@@ -1,17 +1,15 @@
 
-const productControllerFromDataBase = require("../controller/productControllerFromDataBase");
-const multer = require('multer')
-const upload = multer({ dest: 'public' })
+const productControllerMongoDb = require("../controller/productControllerMongoDb");
 
 module.exports = function (app) {
 
-  app.get("/products", productControllerFromDataBase.getProducts);
+  app.get("/products", productControllerMongoDb.getProducts);
 
-  app.get("/products/:id", productControllerFromDataBase.getProductById);
+  app.get("/products/:id", productControllerMongoDb.getProductById);
 
-  app.post("/products", upload.single('file'), productControllerFromDataBase.saveProduct);
+  app.post("/products", productControllerMongoDb.saveProduct);
 
-  app.patch("/products/:id", upload.single('file'), productControllerFromDataBase.updateProduct);
+  app.patch("/products/:id", productControllerMongoDb.updateProduct);
 
-  app.delete("/products/:id", productControllerFromDataBase.deleteProduct);
+  app.delete("/products/:id", productControllerMongoDb.deleteProduct);
 };
