@@ -1,22 +1,34 @@
 const express = require("express");
-var bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const { MongoClient } = require('mongodb');
 
 const app = express();
+const PORT = 5000;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 async function main() {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
-  main().catch((err) => console.log(err));
+    const client = new MongoClient(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+    try {
+        await client.connect();
+        console.log('Connected to MongoDB');
 
-app.use(express.static('./app/public'));
+        const db = client.db('latihan');
+        const collection = db.collection('product');
 
+    } catch (error) {
+        console.error('Koneksi ke MongoDB gagal:', error);
+    }
+}
 
+main().catch((err) => console.log(err));
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 require("./app/router/router")(app);
 
-app.listen(5000, () => console.log('running on http://localhost:5000'));
+app.listen(PORT, () => console.log(`Running on http://localhost:${PORT}`));
